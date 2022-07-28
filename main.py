@@ -1,43 +1,9 @@
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
-from typing import List
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
-
-
-class ConnectionManager:
-    """
-    Класс для подключения и отключения
-    пользователя к серверу по WebSocket
-    """
-    def __init__(self):
-        """Создаёт пустой список активных подключений"""
-        self.active_connections: List[WebSocket] = []
-
-    @staticmethod
-    async def send_message(message: dict, websocket: WebSocket):
-        """Отправляет сообщение"""
-        await websocket.send_json(message)
-
-    async def connect(self, websocket: WebSocket):
-        """
-        Подключение к Websocket.
-        Добавляет WS в список актиных подключений.
-        """
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        """
-        Отключение от Websocket.
-        Удаляет WS из списка актиных подключений.
-        """
-        self.active_connections.remove(websocket)
-
-
-manager = ConnectionManager()
 
 
 @app.get("/")
@@ -50,14 +16,19 @@ async def get(request: Request):
 async def websocket_endpoint(websocket: WebSocket):
     """
     Обрабатывает подключение.
-    Получает сообщение.
+    Получает сообщение в фомате JSON.
+    Добавляет порядковый номер.
+    Отправляет сообщение в формате JSON.
     Обрабатывает отсоединение от сервера WebSocket.
     """
-    await manager.connect(websocket)
-
+    msg_id = 0
+    await websocket.accept()
     try:
         while True:
+            msg_id += 1
             data = await websocket.receive_json()
-            await manager.send_message(data, websocket)
+            data["id"] = msg_id
+            print(data)
+            await websocket.send_json(data)
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        pass
