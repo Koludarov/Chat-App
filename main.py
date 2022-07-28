@@ -9,7 +9,7 @@ templates = Jinja2Templates(directory="templates")
 
 class ConnectionManager:
     """
-    Клас для подключения и отключения
+    Класс для подключения и отключения
     пользователя к серверу по WebSocket
     """
     def __init__(self):
