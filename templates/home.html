@@ -5,23 +5,22 @@
     websocket.onmessage = function(event) {
         var messages = document.getElementById('messages')
         var message = document.createElement('li');
+        // Форматирует JSON для вывода
         var receiveJson = JSON.parse(event.data);
         var content = document.createTextNode(receiveJson.message);
         var id = document.createTextNode(receiveJson.id);
-        // Добавлен вывод msg_id. Отображает, что каждому сообщению добавлен порядковый номер.
-        message.appendChild (document.createTextNode ('msg_id: '));
+        // Добавлен вывод id. Отображает, что каждому сообщению добавлен порядковый номер.
+        message.appendChild (document.createTextNode ('Номер: '));
         message.appendChild(id);
-        message.appendChild (document.createTextNode ('.  '));
+        message.appendChild (document.createTextNode ('.  Сообщение: '));
         message.appendChild(content);
         messages.appendChild(message)
     };
-    //При обновлении страницы msg_id обнуляется
-    var msg_id = 0
     function sendMessage(event) {
-        msg_id += 1;
         var input = document.getElementById("messageText");
-        var message = {'message': input.value, id: msg_id};
-        var messageJson = JSON.stringify(message);
+        var message = {"message": input.value};
+        // Преобразовывает полученное сообщение в формат JSON
+        var messageJson = JSON.stringify(message, null, '\t');
         websocket.send(messageJson);
         input.value = '';
         event.preventDefault()
@@ -31,8 +30,8 @@
 <h3 class="ui header">Сообщения чата:</h3>
 <div>
   <div class="ui bulleted link list">
-        <ol class="ui list" id='messages'>
-        </ol>
+        <ul class="ui list" id='messages'>
+        </ul>
   </div>
   <div class="ui compact message">
           <form action="" onsubmit="sendMessage(event)">
