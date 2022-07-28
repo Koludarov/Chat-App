@@ -1,3 +1,5 @@
 # Chat-App
-Made simple one-page chat app.
+Simple one-page chat app.
 Based on FastApi
+
+Made for Relabs
