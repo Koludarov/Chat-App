@@ -22,12 +22,18 @@ class ConnectionManager:
         await websocket.send_json(message)
 
     async def connect(self, websocket: WebSocket):
-        """Подключение к Websocket"""
+        """
+        Подключение к Websocket.
+        Добавляет WS в список актиных подключений.
+        """
         await websocket.accept()
         self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
-        """Отключение от Websocket"""
+        """
+        Отключение от Websocket.
+        Удаляет WS из списка актиных подключений.
+        """
         self.active_connections.remove(websocket)
 
 
