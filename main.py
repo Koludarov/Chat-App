@@ -28,7 +28,6 @@ async def websocket_endpoint(websocket: WebSocket):
             msg_id += 1
             data = await websocket.receive_json()
             data["id"] = msg_id
-            print(data)
             await websocket.send_json(data)
     except WebSocketDisconnect:
         pass
