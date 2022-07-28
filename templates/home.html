@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+    var websocket = new WebSocket("ws://localhost:8000/websocket");
+    websocket.onmessage = function(event) {
+        var messages = document.getElementById('messages')
+        var message = document.createElement('li');
+        var receiveJson = JSON.parse(event.data);
+        var content = document.createTextNode(receiveJson.message);
+        var id = document.createTextNode(receiveJson.id);
+        // Добавлен вывод msg_id. Отображает, что каждому сообщению добавлен порядковый номер.
+        message.appendChild (document.createTextNode ('msg_id: '));
+        message.appendChild(id);
+        message.appendChild (document.createTextNode ('.  '));
+        message.appendChild(content);
+        messages.appendChild(message)
+    };
+    //При обновлении страницы msg_id обнуляется
+    var msg_id = 0
+    function sendMessage(event) {
+        msg_id += 1;
+        var input = document.getElementById("messageText");
+        var message = {'message': input.value, id: msg_id};
+        var messageJson = JSON.stringify(message);
+        websocket.send(messageJson);
+        input.value = '';
+        event.preventDefault()
+
+    }
+</script>
+<h3 class="ui header">Сообщения чата:</h3>
+<div>
+  <div class="ui bulleted link list">
+        <ol class="ui list" id='messages'>
+        </ol>
+  </div>
+  <div class="ui compact message">
+          <form action="" onsubmit="sendMessage(event)">
+            <div class="ui input">
+                <input type="text" id="messageText" autocomplete="off"/>
+                <button type="submit" class="ui button primary">Send</button>
+            </div>
+        </form>
+  </div>
+</div>
+{% endblock content %}
